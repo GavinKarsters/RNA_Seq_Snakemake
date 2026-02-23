@@ -505,22 +505,22 @@ rule rseqc_read_dist:
     shell:
         "read_distribution.py -i {input.bam} -r {input.bed} > {output} 2> {log}"
 
-# 5. Junction Annotation (Checks splicing efficiency)
-rule rseqc_junction_annotation:
-    input:
-        bam = f"{OUT_DIR}/mapped/{{sample}}_Aligned.sortedByCoord.out.bam",
-        bai = f"{OUT_DIR}/mapped/{{sample}}_Aligned.sortedByCoord.out.bam.bai",
-        bed = get_bed_ref
-    output: f"{OUT_DIR}/qc/rseqc/{{sample}}_junction_annotation.txt"
-    log: f"{OUT_DIR}/logs/rseqc/junction_{{sample}}.log"
-    params: prefix=f"{OUT_DIR}/qc/rseqc/{{sample}}_junction"
-    resources: mem_mb=8000, runtime=lambda wc, attempt: get_runtime(40, attempt)
-    container: "docker://quay.io/biocontainers/rseqc:5.0.4--pyhdfd78af_1"
-    shell:
-        """
-        # junction_annotation produces multiple files/plots, we dump the stats to stdout/txt
-        junction_annotation.py -i {input.bam} -r {input.bed} -o {params.prefix} > {output} 2> {log}
-        """
+# 5. Junction Annotation (Checks splicing efficiency (Optional))
+#rule rseqc_junction_annotation:
+#    input:
+#        bam = f"{OUT_DIR}/mapped/{{sample}}_Aligned.sortedByCoord.out.bam",
+#        bai = f"{OUT_DIR}/mapped/{{sample}}_Aligned.sortedByCoord.out.bam.bai",
+#        bed = get_bed_ref
+#    output: f"{OUT_DIR}/qc/rseqc/{{sample}}_junction_annotation.txt"
+#    log: f"{OUT_DIR}/logs/rseqc/junction_{{sample}}.log"
+#    params: prefix=f"{OUT_DIR}/qc/rseqc/{{sample}}_junction"
+#    resources: mem_mb=8000, runtime=lambda wc, attempt: get_runtime(40, attempt)
+#    container: "docker://quay.io/biocontainers/rseqc:5.0.4--pyhdfd78af_1"
+#    shell:
+#        """
+#        # junction_annotation produces multiple files/plots, we dump the stats to stdout/txt
+#        junction_annotation.py -i {input.bam} -r {input.bed} -o {params.prefix} > {output} 2> {log}
+#        """
         
 #========================================================================================================================================================
 # 5. featureCounts: Counts reads per gene using the GTF annotation (part of the Subread package).
@@ -608,7 +608,7 @@ rule deseq2:
     log: f"{OUT_DIR}/logs/deseq2.log"
     benchmark: f"{BENCH_DIR}/deseq2.tsv"
     params:
-        species=config.get("species", "human"),
+        species=lambda wc: samples.iloc[0]["genome"],
         outdir=f"{OUT_DIR}/deseq2",
         lfc_threshold=config.get("deseq2", {}).get("lfc_threshold", 1.0),
         padj_threshold=config.get("deseq2", {}).get("padj_threshold", 0.05),
@@ -680,7 +680,7 @@ rule multiqc:
         trim_logs=expand(f"{OUT_DIR}/logs/trim/{{s}}.log", s=samples.index),
         fc_summaries=expand(f"{OUT_DIR}/counts/{{s}}_counts.txt.summary", s=samples.index),
         rseqc_dist=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_read_distribution.txt", s=samples.index),
-        rseqc_junc=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_junction_annotation.txt", s=samples.index),
+        #rseqc_junc=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_junction_annotation.txt", s=samples.index),
         rseqc_inf=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_infer_experiment.txt", s=samples.index),
         dedup_pos=expand(f"{OUT_DIR}/qc/dedup/{{s}}.pos.DupRate.xls", s=samples.index),
         dedup_seq=expand(f"{OUT_DIR}/qc/dedup/{{s}}.seq.DupRate.xls", s=samples.index),
