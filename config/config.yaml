@@ -16,8 +16,6 @@ refs:
 star:
   multimap_max: 20
 
-# Species for DESeq2 (determines OrgDb for GO enrichment)
-species: "human"
 
 # DESeq2 settings
 deseq2:
