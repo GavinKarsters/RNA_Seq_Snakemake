@@ -141,14 +141,14 @@ Open `setup_experiment.py` and edit the **USER CONFIGURATION** section:
 ### 2.4 Generate the sample sheet and metadata
 
 ```bash
-#example using KAA12315 experiment ID
-python setup_experiment.py -e KAA12315 -g human
+#example using DAAO_EXP experiment ID
+python setup_experiment.py -e DAAO_EXP -g human
 ```
 
 This creates 3 crucial files in the `config/` directory:
-- `samples_KAA12315.tsv` (Used by Snakemake for FASTQ paths)
-- `metadata_KAA12315.tsv` (Used by DESeq2 for sample/condition assignments)
-- `comparisons_KAA12315.tsv` (Used by DESeq2 for contrast definitions)
+- `samples_DAAO_EXP.tsv` (Used by Snakemake for FASTQ paths)
+- `metadata_DAAO_EXP.tsv` (Used by DESeq2 for sample/condition assignments)
+- `comparisons_DAAO_EXP.tsv` (Used by DESeq2 for contrast definitions)
 
 ---
 
@@ -160,7 +160,7 @@ By default, the pipeline does not run DESeq2 unless instructed. To run it, ensur
 ### 3.2 Dry-run (recommended before launching)
 
 ```bash
-./run_pipeline.sh -e KAA12315 -n -d
+./run_pipeline.sh -e DAAO_EXP -n -d
 ```
 
 During dry-run, check:
@@ -169,13 +169,13 @@ During dry-run, check:
 ### 3.3 Run the pipeline for a specific experiment ID (on SLURM):
 
 ```bash
-./run_pipeline.sh -e KAA12315 -d
+./run_pipeline.sh -e DAAO_EXP -d
 ```
 
 ### 3.4 Unlock (if Snakemake crashed previously)
 
 ```bash
-./run_pipeline.sh -e KAA12315 -u
+./run_pipeline.sh -e DAAO_EXP -u
 ```
 
 ### 3.5 Touch mode
@@ -183,7 +183,7 @@ During dry-run, check:
 If you changed code/parameters or simply some comments within certain rules but want Snakemake to treat existing outputs as up-to-date to prevent re-running those rules:
 
 ```bash
-./run_pipeline.sh -e KAA12315 -t "trim_pe trim_se star_pe star_se"
+./run_pipeline.sh -e DAAO_EXP -t "trim_pe trim_se star_pe star_se"
 ```
 ---
 
