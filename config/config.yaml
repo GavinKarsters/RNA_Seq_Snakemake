@@ -1,0 +1,25 @@
+# =============================================================================
+#                    RNA-seq Pipeline Configuration
+# =============================================================================
+
+refs:
+  mouse:
+    star_index: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a/"
+    gtf: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a/gencode.vM25.primary_assembly.annotation.gtf"
+    chrom_sizes: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a/chrNameLength.txt"
+  human:
+    star_index: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a_human/"
+    gtf: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a_human/gencode.v44.primary_assembly.annotation.gtf"
+    chrom_sizes: "/hpc/local/Rocky8/umc_kaaij/gkarsters/Rna-seq/reference_star_2.7.4a_human/chrNameLength.txt"
+    
+    
+star:
+  multimap_max: 20
+
+# Species for DESeq2 (determines OrgDb for GO enrichment)
+species: "human"
+
+# DESeq2 settings
+deseq2:
+  lfc_threshold: 1.0
+  padj_threshold: 0.05
