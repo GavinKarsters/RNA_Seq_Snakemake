@@ -46,11 +46,11 @@ def get_raw_fastqs(wc):
     return [samples.loc[wc.sample, "fq1"]]
 
 def get_deseq2_targets():
-    """Returns DESeq2 output files if enabled, or empty list."""
     if not RUN_DESEQ2:
         return []
-    return [f"{OUT_DIR}/deseq2/deseq2_summary.csv", f"{OUT_DIR}/deseq2/pca_plot.png"]
-
+    return [f"{OUT_DIR}/deseq2/deseq2_summary.csv", f"{OUT_DIR}/deseq2/PCA_Plot_mqc.png"]
+    
+    
 def get_bed_ref(wc):
     g = samples.loc[wc.sample, "genome"]
     return f"references/{g}.bed12"
@@ -604,7 +604,7 @@ rule deseq2:
         script="run_deseq2.R"
     output:
         summary=f"{OUT_DIR}/deseq2/deseq2_summary.csv",
-        pca=f"{OUT_DIR}/deseq2/pca_plot.png"
+        pca=f"{OUT_DIR}/deseq2/PCA_Plot_mqc.png"
     log: f"{OUT_DIR}/logs/deseq2.log"
     benchmark: f"{BENCH_DIR}/deseq2.tsv"
     params:
@@ -680,21 +680,20 @@ rule multiqc:
         trim_logs=expand(f"{OUT_DIR}/logs/trim/{{s}}.log", s=samples.index),
         fc_summaries=expand(f"{OUT_DIR}/counts/{{s}}_counts.txt.summary", s=samples.index),
         rseqc_dist=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_read_distribution.txt", s=samples.index),
-        #rseqc_junc=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_junction_annotation.txt", s=samples.index),
         rseqc_inf=expand(f"{OUT_DIR}/qc/rseqc/{{s}}_infer_experiment.txt", s=samples.index),
         dedup_pos=expand(f"{OUT_DIR}/qc/dedup/{{s}}.pos.DupRate.xls", s=samples.index),
         dedup_seq=expand(f"{OUT_DIR}/qc/dedup/{{s}}.seq.DupRate.xls", s=samples.index),
         fastqc_zips = expand(f"{OUT_DIR}/qc/fastqc/{{sample}}_1_fastqc.zip", sample=SAMPLES_PE) + \
                       expand(f"{OUT_DIR}/qc/fastqc/{{sample}}_2_fastqc.zip", sample=SAMPLES_PE) + \
-                      expand(f"{OUT_DIR}/qc/fastqc/{{sample}}_fastqc.zip", sample=SAMPLES_SE)
+                      expand(f"{OUT_DIR}/qc/fastqc/{{sample}}_fastqc.zip", sample=SAMPLES_SE),
+        deseq2 = get_deseq2_targets() 
     output: f"{OUT_DIR}/qc/multiqc_report.html"
     resources: mem_mb=5000, runtime=lambda wc, attempt: get_runtime(10, attempt)
     container: "docker://quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0"
     shell:
         """
-        multiqc {OUT_DIR} -o {OUT_DIR}/qc -n multiqc_report.html -f
+        multiqc {OUT_DIR} -o {OUT_DIR}/qc -n multiqc_report.html -f -c config/multiqc_config.yaml
         """
-
        
         
 #========================================================================================================================================================

@@ -1,0 +1,32 @@
+title: "RNA-Seq Analysis Report"
+subtitle: "Automated QC and Differential Expression Pipeline"
+
+report_section_order:
+  general_stats:
+    order: 1000
+  fastqc:
+    order: 990
+  memory_usage:
+    order: 980
+  execution_time:
+    order: 970
+  cutadapt:
+    order: 960
+  star:
+    order: 950
+  featurecounts:
+    order: 940
+  rseqc:
+    order: 930
+  PCA_Plot:
+    order: 920
+  Top_20_Variable_Genes:
+    order: 910
+  RPKM_TPM_Distribution:
+    order: 900
+  Library_Sizes:
+    order: 890
+  Histogram_Filtered_Counts:
+    order: 880
+  Histogram_Raw_Counts:
+    order: 870

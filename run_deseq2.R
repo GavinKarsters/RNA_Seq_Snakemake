@@ -223,7 +223,7 @@ tryCatch({
         theme_minimal() +
         annotate("text", x = Inf, y = Inf, label = sprintf("%% Zeros: %.1f%%", perc_zeros),
                  hjust = 1.1, vjust = 1.5, size = 4, color = "red")
-    ggsave(file.path(outdir, "histogram_raw_counts.png"), p_raw, width = 10, height = 6, dpi = 300)
+    ggsave(file.path(outdir, "Histogram_Raw_Counts_mqc.png"), p_raw, width = 10, height = 6, dpi = 300)
 
     # Filtered: genes expressed in >= 20% of samples
     prop_expr <- rowSums(count_matrix > 0) / ncol(count_matrix)
@@ -244,7 +244,7 @@ tryCatch({
             annotate("text", x = Inf, y = Inf,
                      label = sprintf("Genes retained: %d / %d", sum(keep), nrow(count_matrix)),
                      hjust = 1.1, vjust = 3, size = 4, color = "blue")
-        ggsave(file.path(outdir, "histogram_filtered_counts.png"), p_filt, width = 10, height = 6, dpi = 300)
+        ggsave(file.path(outdir, "Histogram_Filtered_Counts_mqc.png"), p_filt, width = 10, height = 6, dpi = 300)
     }
     cat("Histograms saved.\n")
 }, error = function(e) { message("ERROR generating histograms: ", e$message) })
@@ -254,11 +254,11 @@ if (!is.null(geneRPKM) && !is.null(geneTPM)) {
     tryCatch({
         pseudo <- 0.1
 
-        plot_rpkm <- reshape::melt(as.data.frame(geneRPKM), variable.name = "Sample", value.name = "RPKM")
+        plot_rpkm <- reshape2::melt(as.data.frame(geneRPKM), variable.name = "Sample", value.name = "RPKM")
         plot_rpkm$Sample <- gsub("_RPKM$", "", plot_rpkm$Sample)
         plot_rpkm$log2val <- log2(plot_rpkm$RPKM + pseudo)
 
-        plot_tpm <- reshape::melt(as.data.frame(geneTPM), variable.name = "Sample", value.name = "TPM")
+        plot_tpm <- reshape2::melt(as.data.frame(geneTPM), variable.name = "Sample", value.name = "TPM")
         plot_tpm$Sample <- gsub("_TPM$", "", plot_tpm$Sample)
         plot_tpm$log2val <- log2(plot_tpm$TPM + pseudo)
 
@@ -275,7 +275,7 @@ if (!is.null(geneRPKM) && !is.null(geneTPM)) {
             coord_cartesian(ylim = quantile(plot_tpm$log2val, c(0.01, 0.99), na.rm = TRUE))
 
         p_combined <- grid.arrange(p1, p2, ncol = 2)
-        ggsave(file.path(outdir, "rpkm_tpm_distribution_boxplot.png"), p_combined,
+        ggsave(file.path(outdir, "RPKM_TPM_Distribution_mqc.png"), p_combined,
                width = 20, height = 7, dpi = 300)
         cat("RPKM/TPM boxplots saved.\n")
 
@@ -291,7 +291,7 @@ if (!is.null(geneRPKM) && !is.null(geneTPM)) {
             theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
             labs(title = "Library sizes across samples", x = "Sample", y = "Total RPKM/TPM") +
             scale_y_continuous(labels = comma)
-        ggsave(file.path(outdir, "library_sizes_plot.png"), p3, width = 15, height = 6, dpi = 300)
+        ggsave(file.path(outdir, "Library_Sizes_mqc.png"), p3, width = 15, height = 6, dpi = 300)
         cat("Library size plot saved.\n")
 
         # Top 20 variable genes heatmap
@@ -306,7 +306,7 @@ if (!is.null(geneRPKM) && !is.null(geneTPM)) {
         if (length(top_20) > 0) {
             log2_mat <- log2(tpm_matrix[top_20, , drop = FALSE] + pseudo)
             colnames(log2_mat) <- gsub("_TPM$", "", colnames(log2_mat))
-            png(file.path(outdir, "top_20_variable_genes_heatmap.png"), width = 1400, height = 1000, res = 150)
+            png(file.path(outdir, "Top_20_Variable_Genes_mqc.png"), width = 1400, height = 1000, res = 150)
             pheatmap(log2_mat, scale = "row", main = "Top 20 Variable Genes (log2(TPM+0.1))",
                      fontsize_row = 7, fontsize_col = 9,
                      color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100))
@@ -445,7 +445,7 @@ perform_GO_enrichment <- function(res, comp_name, comp_dir) {
                 tryCatch({
                     p <- dotplot(ego, showCategory = min(20, nrow(ego)),
                                  title = paste0("GO ", ont, ": ", comp_name))
-                    ggsave(file.path(comp_dir, paste0("GO_", ont, "_dotplot.png")),
+                    ggsave(file.path(comp_dir, paste0(comp_name, "_GO_", ont, "_Dotplot_mqc.png")),
                            p, width = 10, height = 8, dpi = 300)
                     cat(sprintf("  GO %s dotplot saved.\n", ont))
                 }, error = function(e) {
@@ -566,11 +566,11 @@ for (comp in comparisons) {
 
     # --- MA Plot ---
     create_ma_plot(res, sprintf("MA Plot: %s", comparison_name),
-                   file.path(comparison_dir, "ma_plot.png"))
+                   file.path(comparison_dir, paste0(comparison_name, "_MA_Plot_mqc.png")))
 
     # --- Volcano Plot ---
     create_volcano_plot(res, sprintf("Volcano Plot: %s", comparison_name),
-                        file.path(comparison_dir, "volcano_plot.png"))
+                        file.path(comparison_dir, paste0(comparison_name, "_Volcano_Plot_mqc.png")))
 
     # --- Heatmap of Top DEGs ---
     if (n_sig > 0) {
@@ -588,7 +588,7 @@ for (comp in comparisons) {
                 if (nrow(heatmap_mat) > 0) {
                     create_heatmap(heatmap_mat, colData(dds_subset),
                                    sprintf("Top %d DEGs: %s (VST)", nrow(heatmap_mat), comparison_name),
-                                   file.path(comparison_dir, "top_degs_heatmap.png"))
+                                   file.path(comparison_dir, paste0(comparison_name, "_Top_DEGs_Heatmap_mqc.png")))
                 }
             }, error = function(e) { message("  Error generating heatmap: ", e$message) })
         }
@@ -624,7 +624,7 @@ tryCatch({
               panel.grid.minor = element_blank()) +
         ggtitle("PCA of RNA-seq Samples (VST transformed)") +
         scale_color_brewer(palette = "Set1")
-    ggsave(file.path(outdir, "pca_plot.png"), pca_plot, width = 10, height = 7, dpi = 300)
+    ggsave(file.path(outdir, "PCA_Plot_mqc.png"), pca_plot, width = 10, height = 7, dpi = 300)
     cat("PCA plot saved.\n")
 }, error = function(e) { message("ERROR creating PCA plot: ", e$message) })
 

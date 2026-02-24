@@ -14,7 +14,7 @@ The pipeline is run per experiment ID (**EXP_ID**). It expects a sample sheet at
 - `setup_experiment.py` — generates `config/samples_<EXP_ID>.tsv`, `config/metadata_<EXP_ID>.tsv`, and `config/comparisons_<EXP_ID>.tsv` by scanning a FASTQ directory and applying condition/replicate mappings.
 - `run_deseq2.R` — custom DESeq2 script that generates DE tables, PCA, MA/Volcano plots, heatmaps, and GO enrichment.
 - `config/`
-  - `config.yaml` — reference paths, genome specific variables, and tool parameters (STAR index, multimap limits, DESeq2 thresholds).
+  - `config.yaml` — reference paths and tool parameters (STAR index, multimap limits, DESeq2 thresholds).
   - `containers/` — local cache for Apptainer/Singularity images, populated automatically on first run.
 
 ---
@@ -36,6 +36,8 @@ The pipeline is run per experiment ID (**EXP_ID**). It expects a sample sheet at
 
 ![Pipeline flowchart](pipeline_flow.png)
 
+
+Example MultiQC report is available in the `Example_multiqc_report.html` file in the repository and can be opened directly in a browser after downloading it to your local machine.
 ---
 
 ## Requirements
