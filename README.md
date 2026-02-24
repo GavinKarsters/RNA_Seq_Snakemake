@@ -38,7 +38,9 @@ The pipeline is run per experiment ID (**EXP_ID**). It expects a sample sheet at
 
 
 Example MultiQC report is available in the `Example_multiqc_report.html` file in the repository and can be opened directly in a browser after downloading it to your local machine.
+
 ---
+
 
 ## Requirements
 
