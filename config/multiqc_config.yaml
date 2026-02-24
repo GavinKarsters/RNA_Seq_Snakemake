@@ -20,13 +20,11 @@ report_section_order:
     order: 930
   PCA_Plot:
     order: 920
-  Top_20_Variable_Genes:
-    order: 910
   RPKM_TPM_Distribution:
-    order: 900
+    order: 910
   Library_Sizes:
-    order: 890
+    order: 900
   Histogram_Filtered_Counts:
-    order: 880
+    order: 890
   Histogram_Raw_Counts:
-    order: 870
+    order: 880

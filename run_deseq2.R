@@ -293,26 +293,6 @@ if (!is.null(geneRPKM) && !is.null(geneTPM)) {
             scale_y_continuous(labels = comma)
         ggsave(file.path(outdir, "Library_Sizes_mqc.png"), p3, width = 15, height = 6, dpi = 300)
         cat("Library size plot saved.\n")
-
-        # Top 20 variable genes heatmap
-        tpm_matrix <- as.matrix(geneTPM)
-        row_labels <- rownames(tpm_matrix)
-        symbols <- get_gene_symbols(gsub("\\..*", "", row_labels))
-        rownames(tpm_matrix) <- ifelse(is.na(symbols) | symbols == "", row_labels,
-                                        paste0(symbols, " (", row_labels, ")"))
-
-        gene_var <- apply(tpm_matrix, 1, var, na.rm = TRUE)
-        top_20 <- order(gene_var, decreasing = TRUE, na.last = NA)[1:min(20, sum(!is.na(gene_var)))]
-        if (length(top_20) > 0) {
-            log2_mat <- log2(tpm_matrix[top_20, , drop = FALSE] + pseudo)
-            colnames(log2_mat) <- gsub("_TPM$", "", colnames(log2_mat))
-            png(file.path(outdir, "Top_20_Variable_Genes_mqc.png"), width = 1400, height = 1000, res = 150)
-            pheatmap(log2_mat, scale = "row", main = "Top 20 Variable Genes (log2(TPM+0.1))",
-                     fontsize_row = 7, fontsize_col = 9,
-                     color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100))
-            dev.off()
-            cat("Top variable genes heatmap saved.\n")
-        }
     }, error = function(e) { message("ERROR generating RPKM/TPM plots: ", e$message) })
 }
 
@@ -571,30 +551,6 @@ for (comp in comparisons) {
     # --- Volcano Plot ---
     create_volcano_plot(res, sprintf("Volcano Plot: %s", comparison_name),
                         file.path(comparison_dir, paste0(comparison_name, "_Volcano_Plot_mqc.png")))
-
-    # --- Heatmap of Top DEGs ---
-    if (n_sig > 0) {
-        num_heat <- min(50, n_sig)
-        top_genes <- sig_df$ensembl_id[1:num_heat]
-
-        # Subset to just the two conditions and drop unused factor levels
-        dds_subset <- dds[, dds$condition %in% c(treatment, reference)]
-        dds_subset$condition <- droplevels(dds_subset$condition)
-
-        if (ncol(dds_subset) > 1 && nlevels(dds_subset$condition) > 1) {
-            tryCatch({
-                vst_counts <- assay(vst(dds_subset, blind = FALSE))
-                heatmap_mat <- vst_counts[rownames(vst_counts) %in% top_genes, , drop = FALSE]
-                if (nrow(heatmap_mat) > 0) {
-                    create_heatmap(heatmap_mat, colData(dds_subset),
-                                   sprintf("Top %d DEGs: %s (VST)", nrow(heatmap_mat), comparison_name),
-                                   file.path(comparison_dir, paste0(comparison_name, "_Top_DEGs_Heatmap_mqc.png")))
-                }
-            }, error = function(e) { message("  Error generating heatmap: ", e$message) })
-        }
-    } else {
-        cat("  No significant genes found for heatmap.\n")
-    }
 
     # --- GO Enrichment ---
     perform_GO_enrichment(res, comparison_name, comparison_dir)
