@@ -131,13 +131,26 @@ Open `setup_experiment.py` and edit the **USER CONFIGURATION** section:
   where the leading number is the numeric ID used in `CONDITION_MAPPING`.
   
   If your FASTQs do not have numeric prefixes, you can easily add them:
+
   ```bash
-  # example: prepend incremental IDs (1, 2, 3, ...) to all fastqs
+  # For Single End raw data: prepend incremental IDs (1, 2, 3, ...) to all fastqs
   i=1
   for f in *.fastq.gz; do
     mv "$f" "$i-$f"
     i=$((i+1))
   done
+
+
+  # For Paired End raw data: prepend incremental IDs (identical for each pair of fastqs):
+  i=1
+  for f1 in *_R1*.fastq.gz; do
+    f2="${f1/_R1/_R2}"
+    mv "$f1" "$i-$f1"
+    mv "$f2" "$i-$f2"
+    i=$((i+1))
+  done
+
+
   ```
 - `COMPARISONS`  
   Define the comparisons for DESeq2 as `["Treatment", "Reference"]`. The output will calculate log2 fold changes of Treatment over Reference.
