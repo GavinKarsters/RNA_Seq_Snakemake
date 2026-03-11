@@ -171,37 +171,53 @@ This creates 3 crucial files in the `config/` directory:
 
 ## 3) Run the pipeline
 
-### 3.1 Enable DESeq2 (Optional but recommended)
-By default, the pipeline does not run DESeq2 unless instructed. To run it, ensure you add the `-d` flag when running the pipeline.
+### 3.1 Start a screen session (recommended)
 
-### 3.2 Dry-run (recommended before launching)
+Before running the pipeline, it is strongly recommended to start a `screen` session. This keeps the Snakemake process alive if your SSH connection drops — without it, a lost connection will kill the Snakemake process and leave submitted SLURM jobs untracked.
 
 ```bash
-./run_pipeline.sh -e DAAO_EXP -n -d
+screen -R snakemake
+```
+
+To detach from the screen session at any time (leaving it running): `Ctrl+A` then `D`.  
+To reattach later: `screen -R snakemake`.
+
+### 3.2 Show help screen
+
+```bash
+./run_pipeline.sh -h
+```
+
+### 3.3 Dry-run (recommended before launching)
+
+```bash
+./run_pipeline.sh -e DAAO_EXP -n
 ```
 
 During dry-run, check:
-- Job count looks correct based on amount of samples.
+- Job count looks correct based on amount of samples
+- "Reason" column (e.g., "missing output files" vs "code has changed")
 
-### 3.3 Run the pipeline for a specific experiment ID (on SLURM):
+### 3.4 Run the pipeline for a specific experiment ID (-e) with diffbind (-d) enabled
 
 ```bash
 ./run_pipeline.sh -e DAAO_EXP -d
 ```
 
-### 3.4 Unlock (if Snakemake crashed previously)
+### 3.5 Unlock (if Snakemake crashed previously)
 
 ```bash
 ./run_pipeline.sh -e DAAO_EXP -u
 ```
 
-### 3.5 Touch mode
+### 3.6 Touch mode
 
-If you changed code/parameters or simply some comments within certain rules but want Snakemake to treat existing outputs as up-to-date to prevent re-running those rules:
+If you changed code/parameters or simply some comments within certain rules but want Snakemake to treat existing outputs as up-to-date:
 
 ```bash
 ./run_pipeline.sh -e DAAO_EXP -t "trim_pe trim_se star_pe star_se"
 ```
+
 ---
 
 ## 4) Outputs
