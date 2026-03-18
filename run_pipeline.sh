@@ -53,7 +53,7 @@ show_help() {
     echo "STEP 1: SETUP"
     echo "   Edit 'setup_experiment.py' to define raw data paths & conditions."
     echo "   Then generate the sample sheet + metadata:"
-    echo "     $ python setup_experiment.py -e KAA12315"
+    echo "     $ python setup_experiment.py -e KAA12315 -g [human/mouse]"
     echo ""
     echo "STEP 2: CHECK"
     echo "   Verify the generated files:"
@@ -196,6 +196,7 @@ fi
 echo "Experiment: $EXP_ID | Samples: $N_SAMPLES | DESeq2: $RUN_DESEQ2"
 
 CLUSTER_CMD="sbatch \
+    --parsable \
     --partition=cpu \
     --time={resources.runtime} \
     --mem={resources.mem_mb}M \
@@ -211,5 +212,5 @@ if [ "$DRY_RUN" = true ]; then
     "${CMD[@]}" -npr
 else
     echo "Submitting to SLURM..."
-    "${CMD[@]}" --jobs 50 --cluster "$CLUSTER_CMD" --cluster-status "$PWD/slurm_status.sh"
+    "${CMD[@]}" --jobs 500 --cluster "$CLUSTER_CMD" --cluster-status "$PWD/slurm_status.sh" --cluster-cancel "scancel"
 fi
