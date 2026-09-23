@@ -1,8 +1,7 @@
 sample_name	replicate	condition
-1-WT_rep1  1  WT
-2-WT_rep2  1  WT
-3-WT_rep3  1  WT
-4-TreatA_rep1  1  TreatA
-5-TreatA_rep2  1  TreatA
-6-TreatA_rep3  1  TreatA
-
+1-WT_rep1	1	WT
+2-WT_rep2	1	WT
+3-WT_rep3	1	WT
+4-TreatA_rep1	1	TreatA
+5-TreatA_rep2	1	TreatA
+6-TreatA_rep3	1	TreatA
